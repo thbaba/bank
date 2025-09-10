@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: accounts
+
+  flyway:
+    locations: classpath:db/migration
+    url: jdbc:postgresql://localhost:2345/accounts_db
+    user: postgres
+    password: postgres
+
+  r2dbc:
+    url: r2dbc:postgresql://localhost:2345/accounts_db
+    username: postgres
+    password: postgres
+
+logging:
+  level:
+    org.springframework.data.r2dbc.core: DEBUG
+    io.r2dbc.postgresql.QUERY: DEBUG
+    io.r2dbc.postgresql.PARAM: DEBUG
+
+server:
+  port: 80

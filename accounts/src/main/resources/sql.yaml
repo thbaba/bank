@@ -1,0 +1,9 @@
+sql:
+  select:
+    account_number: "select * from accounts where account_number = :accountNumber"
+    security_number: "select * from accounts where security_number = :securityNumber"
+  insert: "insert into accounts (security_number, account_type) values(:securityNumber, :accountType) returning *"
+  update: "update accounts set account_type = :accountType where account_number = :accountNumber returning *"
+  delete:
+    account_number: "delete from accounts where account_number = :accountNumber"
+    security_number: "delete from accounts where security_number = :securityNumber"
