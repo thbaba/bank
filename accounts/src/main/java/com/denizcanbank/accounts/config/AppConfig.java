@@ -3,15 +3,67 @@ package com.denizcanbank.accounts.config;
 import com.denizcanbank.accounts.application.domain.exception.*;
 import com.denizcanbank.accounts.application.domain.service.AccountComparisonService;
 import com.denizcanbank.accounts.application.domain.service.AccountConsistencyService;
+import com.denizcanbank.accounts.dto.AccountRegistrationRequestDto;
+import com.denizcanbank.accounts.dto.AccountResponseDto;
 import com.denizcanbank.accounts.exception.GlobalExceptionHandler;
 import com.denizcanbank.accounts.handler.Handler;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springdoc.core.annotations.RouterOperation;
+import org.springdoc.core.annotations.RouterOperations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.server.*;
 
+@OpenAPIDefinition(
+        info = @Info(
+                title = "Accounts Microservice API",
+                version = "0.0.1",
+                description = "Accounts Microservice in Bank Appilcation API Documentation"
+        )
+)
 @Configuration
 public class AppConfig {
 
+    @RouterOperations({
+            @RouterOperation(
+                    path = "/api/account",
+                    method = RequestMethod.POST,
+                    operation = @Operation(
+                            operationId = "registerAccount",
+                            summary = "Register a new account",
+                            requestBody = @RequestBody(
+                                    description = "Account details",
+                                    required = true,
+                                    content = @Content(
+                                            schema = @Schema(
+                                                    implementation = AccountRegistrationRequestDto.class
+                                            )
+                                    )
+                            ),
+                            responses = {
+                                    @ApiResponse(
+                                            responseCode = "204",
+                                            description = "Account created successfully",
+                                            content = @Content(
+                                                    schema = @Schema(
+                                                            implementation = AccountResponseDto.class
+                                                    )
+                                            )
+                                    )
+                            }
+                    )
+            )
+    })
     @Bean
     public RouterFunction<ServerResponse> router(Handler handler, GlobalExceptionHandler exceptionHandler) {
         return RouterFunctions.nest(RequestPredicates.path("/api"),
