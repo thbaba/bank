@@ -24,7 +24,7 @@ public class AppConfig {
                         .GET("card/{cardID}", handler::readHandler)
                         .PUT("card",  handler::updateHandler)
                         .DELETE("card/{cardID}", handler::deleteHandler)
-                        /*.filter((req, next) -> next.handle(req)
+                        .filter((req, next) -> next.handle(req)
                                 .onErrorResume(CardAlreadyCreatedException.class,  exceptionHandler::cardAlreadyCreatedExceptionHandler)
                                 .onErrorResume(CardNotFoundException.class,  exceptionHandler::cardNotFoundExceptionHandler)
                                 .onErrorResume(InvalidDepositException.class,  exceptionHandler::invalidDepositExceptionHandler)
@@ -34,7 +34,7 @@ public class AppConfig {
                                 .onErrorResume(NegativeAmountException.class,  exceptionHandler::negativeAmountExceptionHandler)
                                 .onErrorResume(DataAccessException.class, exceptionHandler::dataAccessExceptionHandler)
                                 .onErrorResume(Exception.class, exceptionHandler::genericExceptionHandler)
-                        )*/
+                        )
                         .build()
         );
     }

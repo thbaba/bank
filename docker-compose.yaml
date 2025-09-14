@@ -1,0 +1,81 @@
+services:
+  accounts:
+    image: "thedeno/accounts:latest"
+    container_name: accounts-ms
+    environment:
+      SPRING_APPLICATION_NAME: "accounts"
+      SPRING_R2DBC_URL: "r2dbc:postgresql://accounts-postgres:5432/accounts_db"
+      SPRING_FLYWAY_URL: "jdbc:postgresql://accounts-postgres:5432/accounts_db"
+      SPRING_CONFIG_IMPORT: "configserver:http://configserver-ms"
+    ports:
+      - "3000:80"
+    networks:
+      - dcbanknet
+    depends_on:
+      accounts-postgres:
+        condition: service_healthy
+      configserver:
+        condition: service_healthy
+  accounts-postgres:
+    image: "postgres:17-alpine"
+    container_name: accounts-postgres
+    environment:
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "accounts_db"
+    networks:
+      - dcbanknet
+    ports:
+      - "35432:5432"
+    healthcheck:
+      test: "pg_isready -d accounts_db"
+      interval: 10s
+      retries: 11
+      start_period: 10s
+      timeout: 5m
+  cards:
+    image: "thedeno/cards:latest"
+    container_name: cards-ms
+    environment:
+      SPRING_APPLICATION_NAME: "cards"
+      SPRING_R2DBC_URL: "r2dbc:postgresql://cards-postgres:5432/cards_db"
+      SPRING_FLYWAY_URL: "jdbc:postgresql://cards-postgres:5432/cards_db"
+      SPRING_CONFIG_IMPORT: "configserver:http://configserver-ms"
+    ports:
+      - "4000:80"
+    networks:
+      - dcbanknet
+    depends_on:
+      configserver:
+        condition: service_healthy
+      cards-postgres:
+        condition: service_healthy
+  cards-postgres:
+    image: "postgres:17-alpine"
+    container_name: cards-postgres
+    environment:
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "cards_db"
+    networks:
+      - dcbanknet
+    healthcheck:
+      test: "pg_isready -d cards_db"
+      interval: 10s
+      timeout: 5m
+      retries: 11
+      start_period: 10s
+  configserver:
+    image: "thedeno/configserver:latest"
+    container_name: configserver-ms
+    ports:
+      - "5000:80"
+    networks:
+      - dcbanknet
+    healthcheck:
+      test: "curl --fail --silent localhost/actuator/health/readiness | grep UP || exit 1"
+      retries: 11
+      interval: 10s
+      timeout: 5m
+      start_period: 10s
+networks:
+  dcbanknet:
+    driver: bridge

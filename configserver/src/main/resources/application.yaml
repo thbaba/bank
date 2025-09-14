@@ -1,0 +1,41 @@
+server:
+  port: 80
+
+spring:
+  application:
+    name: configserver
+  profiles:
+    active: git
+  cloud:
+    config:
+      server:
+        git:
+          uri: "https://github.com/thbaba/bank-config.git"
+          default-label: main
+          timeout: 5
+          clone-on-start: true
+          force-pull: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  health:
+    readiness-state:
+      enabled: true
+    liveness-state:
+      enabled: true
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+
+
+encrypt:
+  key-store:
+    location: classpath:/server.jks
+    password: s3cr3t
+    secret: s3cr3t
+    alias: configServerKey

@@ -63,7 +63,7 @@ public class GlobalExceptionHandler {
 
     public Mono<ServerResponse> genericExceptionHandler(Exception ex) {
         return ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).bodyValue(
-                new ErrorResponseDto("Internal Server Error", ex.getMessage(), LocalDateTime.now())
+                new ErrorResponseDto("Internal Server Error", "Something goes wrong..." + ex.getMessage(), LocalDateTime.now())
         );
     }
 }

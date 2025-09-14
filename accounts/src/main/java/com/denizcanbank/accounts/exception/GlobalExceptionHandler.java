@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
 
     public Mono<ServerResponse> globalExceptionHandler(Exception ex) {
         return ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).bodyValue(
-                new ServerErrorResponseDto("Internal Error", "Something goes wrong...", LocalDateTime.now())
+                new ServerErrorResponseDto("Internal Error", "Something goes wrong... " + ex.getMessage(), LocalDateTime.now())
         );
     }
 
