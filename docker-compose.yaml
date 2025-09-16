@@ -1,8 +1,9 @@
 x-net-base: &net-base
   networks:
     - dcbanknet
-x-health-base: &health-base
+x-actuator-healthcheck-base: &actutator-healthcheck-base
   healthcheck:
+    test: "curl --fail --silent localhost/actuator/health/readiness | grep UP || exit 1"
     interval: 10s
     retries: 11
     start_period: 10s
@@ -10,7 +11,9 @@ x-health-base: &health-base
 services:
   accounts:
     <<: *net-base
-    image: "thedeno/accounts:latest"
+#    image: "thedeno/accounts:latest"
+    build:
+      context: ./accounts
     container_name: accounts-ms
     environment:
       SPRING_APPLICATION_NAME: "accounts"
@@ -24,20 +27,26 @@ services:
         condition: service_healthy
       configserver:
         condition: service_healthy
+      discoveryserver:
+        condition: service_healthy
   accounts-postgres:
-    <<: [*net-base, *health-base]
+    <<: *net-base
     image: "postgres:17-alpine"
     container_name: accounts-postgres
     environment:
       POSTGRES_PASSWORD: "postgres"
       POSTGRES_DB: "accounts_db"
-    ports:
-      - "35432:5432"
     healthcheck:
       test: "pg_isready -d accounts_db"
+      interval: 10s
+      retries: 11
+      start_period: 10s
+      timeout: 5m
   cards:
     <<: *net-base
-    image: "thedeno/cards:latest"
+#    image: "thedeno/cards:latest"
+    build:
+      context: ./cards
     container_name: cards-ms
     environment:
       SPRING_APPLICATION_NAME: "cards"
@@ -51,8 +60,10 @@ services:
         condition: service_healthy
       configserver:
         condition: service_healthy
+      discoveryserver:
+        condition: service_healthy
   cards-postgres:
-    <<: [*net-base, *health-base]
+    <<: *net-base
     image: "postgres:17-alpine"
     container_name: cards-postgres
     environment:
@@ -60,14 +71,30 @@ services:
       POSTGRES_DB: "cards_db"
     healthcheck:
       test: "pg_isready -d cards_db"
+      interval: 10s
+      retries: 11
+      start_period: 10s
+      timeout: 5m
   configserver:
-    <<: [*net-base, *health-base]
-    image: "thedeno/configserver:latest"
+    <<: [*net-base, *actutator-healthcheck-base]
+#    image: "thedeno/configserver:latest"
+    build:
+      context: ./configserver
     container_name: configserver-ms
+  discoveryserver:
+    <<: [*net-base, *actutator-healthcheck-base]
+#    image: "thedeno/discoveryserver:latest"
+    build:
+      context: ./discoveryserver
+    container_name: discoveryserver-ms
+    environment:
+      SPRING_APPLICATION_NAME: "discoveryserver"
+      SPRING_CONFIG_IMPORT: "configserver:http://configserver-ms"
     ports:
-      - "5000:80"
-    healthcheck:
-      test: "curl --fail --silent localhost/actuator/health/readiness | grep UP || exit 1"
+      - "2345:80"
+    depends_on:
+      configserver:
+        condition: service_healthy
 networks:
   dcbanknet:
     driver: bridge

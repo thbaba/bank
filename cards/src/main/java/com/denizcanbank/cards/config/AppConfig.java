@@ -20,10 +20,11 @@ public class AppConfig {
     public RouterFunction<ServerResponse> router(Handler handler, GlobalExceptionHandler exceptionHandler) {
         return RouterFunctions.nest(RequestPredicates.path("/api"),
                 RouterFunctions.route()
-                        .POST("card", handler::createHandler)
-                        .GET("card/{cardID}", handler::readHandler)
-                        .PUT("card",  handler::updateHandler)
-                        .DELETE("card/{cardID}", handler::deleteHandler)
+                        .POST("/card", handler::createHandler)
+                        .GET("/card/account/{accountID}", handler::readByAccountIDHandler)
+                        .GET("/card/{cardID}", handler::readHandler)
+                        .PUT("/card",  handler::updateHandler)
+                        .DELETE("/card/{cardID}", handler::deleteHandler)
                         .filter((req, next) -> next.handle(req)
                                 .onErrorResume(CardAlreadyCreatedException.class,  exceptionHandler::cardAlreadyCreatedExceptionHandler)
                                 .onErrorResume(CardNotFoundException.class,  exceptionHandler::cardNotFoundExceptionHandler)

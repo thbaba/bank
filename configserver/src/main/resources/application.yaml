@@ -17,10 +17,6 @@ spring:
           force-pull: true
 
 management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
   health:
     readiness-state:
       enabled: true
@@ -30,8 +26,6 @@ management:
     health:
       probes:
         enabled: true
-
-
 
 encrypt:
   key-store:

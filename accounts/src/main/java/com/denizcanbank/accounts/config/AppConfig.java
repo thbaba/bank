@@ -17,11 +17,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springdoc.core.annotations.RouterOperations;
+import org.springframework.cloud.client.loadbalancer.reactive.ReactorLoadBalancerExchangeFilterFunction;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.server.*;
 
 @OpenAPIDefinition(
@@ -86,6 +88,11 @@ public class AppConfig {
                         )
                         .build()
         );
+    }
+
+    @Bean
+    public WebClient cardWebClient(ReactorLoadBalancerExchangeFilterFunction f) {
+        return WebClient.builder().filter(f).baseUrl("http://CARDS").build();
     }
 
     @Bean

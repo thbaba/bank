@@ -7,6 +7,9 @@ cd ..
 cd configserver
 (docker build . -f Dockerfile -t thedeno/configserver -t thedeno/configserver:0.0.1 && docker image push thedeno/configserver -a) > /dev/null 2>&1 &
 cd ..
+cd discoveryserver
+(docker build . -f Dockerfile -t thedeno/discoveryserver -t thedeno/discoveryserver:0.0.1 && docker image push thedeno/discoveryserver -a) > /dev/null 2>&1 &
+cd ..
 echo "Waiting..."
 wait
 echo "Done!"
