@@ -11,9 +11,9 @@ x-actuator-healthcheck-base: &actutator-healthcheck-base
 services:
   accounts:
     <<: *net-base
-#    image: "thedeno/accounts:latest"
-    build:
-      context: ./accounts
+    image: "thedeno/accounts:latest"
+#    build:
+#      context: ./accounts
     container_name: accounts-ms
     environment:
       SPRING_APPLICATION_NAME: "accounts"
@@ -44,9 +44,9 @@ services:
       timeout: 5m
   cards:
     <<: *net-base
-#    image: "thedeno/cards:latest"
-    build:
-      context: ./cards
+    image: "thedeno/cards:latest"
+    #    build:
+    #      context: ./cards
     container_name: cards-ms
     environment:
       SPRING_APPLICATION_NAME: "cards"
@@ -77,15 +77,15 @@ services:
       timeout: 5m
   configserver:
     <<: [*net-base, *actutator-healthcheck-base]
-#    image: "thedeno/configserver:latest"
-    build:
-      context: ./configserver
+    image: "thedeno/configserver:latest"
+#    build:
+#      context: ./configserver
     container_name: configserver-ms
   discoveryserver:
     <<: [*net-base, *actutator-healthcheck-base]
-#    image: "thedeno/discoveryserver:latest"
-    build:
-      context: ./discoveryserver
+    image: "thedeno/discoveryserver:latest"
+#    build:
+#      context: ./discoveryserver
     container_name: discoveryserver-ms
     environment:
       SPRING_APPLICATION_NAME: "discoveryserver"
