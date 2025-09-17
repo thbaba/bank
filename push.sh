@@ -1,15 +1,31 @@
-cd accounts
-(docker build . -f Dockerfile -t thedeno/accounts -t thedeno/accounts:0.0.1 && docker image push thedeno/accounts -a) > /dev/null 2>&1 &
-cd ..
-cd cards
-(docker build . -f Dockerfile -t thedeno/cards -t thedeno/cards:0.0.1 && docker image push thedeno/cards -a) > /dev/null 2>&1 &
-cd ..
-cd configserver
-(docker build . -f Dockerfile -t thedeno/configserver -t thedeno/configserver:0.0.1 && docker image push thedeno/configserver -a) > /dev/null 2>&1 &
-cd ..
-cd discoveryserver
-(docker build . -f Dockerfile -t thedeno/discoveryserver -t thedeno/discoveryserver:0.0.1 && docker image push thedeno/discoveryserver -a) > /dev/null 2>&1 &
-cd ..
-echo "Waiting..."
+LOG_FOLDER="push-logs"
+
+
+createImage() {
+  local folderName=$1
+  local imageName=$2
+  local logFile="$LOG_FOLDER/$imageName.log"
+  echo "WAITING $imageName"
+  if (docker build "$folderName" \
+    -f "$folderName/Dockerfile" \
+    -t "thedeno/$imageName" \
+    -t "thedeno/$imageName:0.0.1" && \
+  docker image push "thedeno/$imageName" --all-tags) > "$logFile" 2>&1; then
+    echo "SUCCESS $imageName"
+  else
+    echo "FAIL $imageName"
+    cat "$logFile"
+  fi
+}
+
+mkdir -p "$LOG_FOLDER"
+
+createImage accounts accounts &
+createImage cards cards &
+createImage configserver configserver &
+createImage discoveryserver discoveryserver &
+createImage gatewayserver gatewayserver &
+
 wait
-echo "Done!"
+
+rm -rf "$LOG_FOLDER"

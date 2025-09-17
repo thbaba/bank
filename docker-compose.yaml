@@ -20,8 +20,6 @@ services:
       SPRING_R2DBC_URL: "r2dbc:postgresql://accounts-postgres:5432/accounts_db"
       SPRING_FLYWAY_URL: "jdbc:postgresql://accounts-postgres:5432/accounts_db"
       SPRING_CONFIG_IMPORT: "configserver:http://configserver-ms"
-    ports:
-      - "3000:80"
     depends_on:
       accounts-postgres:
         condition: service_healthy
@@ -29,6 +27,8 @@ services:
         condition: service_healthy
       discoveryserver:
         condition: service_healthy
+    ports:
+      - "3000:80"
   accounts-postgres:
     <<: *net-base
     image: "postgres:17-alpine"
@@ -53,8 +53,6 @@ services:
       SPRING_R2DBC_URL: "r2dbc:postgresql://cards-postgres:5432/cards_db"
       SPRING_FLYWAY_URL: "jdbc:postgresql://cards-postgres:5432/cards_db"
       SPRING_CONFIG_IMPORT: "configserver:http://configserver-ms"
-    ports:
-      - "4000:80"
     depends_on:
       cards-postgres:
         condition: service_healthy
@@ -90,11 +88,23 @@ services:
     environment:
       SPRING_APPLICATION_NAME: "discoveryserver"
       SPRING_CONFIG_IMPORT: "configserver:http://configserver-ms"
-    ports:
-      - "2345:80"
     depends_on:
       configserver:
         condition: service_healthy
+  gatewayserver:
+    <<: *net-base
+    image: "thedeno/gatewayserver:latest"
+    container_name: gatewayserver-ms
+    environment:
+      SPRING_APPLICATION_NAME: "gatewayserver"
+      SPRING_CONFIG_IMPORT: "configserver:http://configserver-ms"
+    depends_on:
+      configserver:
+        condition: service_healthy
+      discoveryserver:
+        condition: service_healthy
+    ports:
+      - "80:80"
 networks:
   dcbanknet:
     driver: bridge

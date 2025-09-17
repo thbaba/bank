@@ -20,7 +20,7 @@ public class CardClient implements ICardClient {
 
     @Override
     public Flux<Card> accountsCards(ID accountID) {
-        String uri = String.format("/api/card/account/%s", accountID.toString());
+        String uri = String.format("/api/account/%s", accountID.toString());
         System.out.println("Accounts Endpoint: " + uri);
 
         return cardWebClient.get()

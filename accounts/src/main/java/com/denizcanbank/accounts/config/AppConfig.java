@@ -70,12 +70,12 @@ public class AppConfig {
     public RouterFunction<ServerResponse> router(Handler handler, GlobalExceptionHandler exceptionHandler) {
         return RouterFunctions.nest(RequestPredicates.path("/api"),
                 RouterFunctions.route()
-                        .POST("/account", handler::registerHandler)
-                        .PATCH("/account", handler::updateHandler)
-                        .GET("/account/{securityNumber:[0-9]{11}}", handler::fetchBySecurityNumberHandler)
-                        .GET("/account/{accountNumber:[0-9]{7}}", handler::fetchByAccountNumberHandler)
-                        .DELETE("/account/{securityNumber:[0-9]{11}}", handler::deleteBySecurityNumberHandler)
-                        .DELETE("/account/{accountNumber:[0-9]{7}}", handler::deleteByAccountNumberHandler)
+                        .POST("", handler::registerHandler)
+                        .PATCH("", handler::updateHandler)
+                        .GET("/{securityNumber:[0-9]{11}}", handler::fetchBySecurityNumberHandler)
+                        .GET("/{accountNumber:[0-9]{7}}", handler::fetchByAccountNumberHandler)
+                        .DELETE("/{securityNumber:[0-9]{11}}", handler::deleteBySecurityNumberHandler)
+                        .DELETE("/{accountNumber:[0-9]{7}}", handler::deleteByAccountNumberHandler)
                         .filter((request, next) -> next.handle(request)
                                 .onErrorResume(AccountAlreadyRegisteredException.class, exceptionHandler::accountAlreadyRegisteredExceptionHandler)
                                 .onErrorResume(InternalErrorException.class, exceptionHandler::internalErrorExceptionHandler)
