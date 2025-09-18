@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: accounts
+  config:
+    import: configserver:http://localhost:3002
