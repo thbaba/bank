@@ -7,6 +7,10 @@ import com.denizcanbank.accounts.dto.AccountRegistrationRequestDto;
 import com.denizcanbank.accounts.dto.AccountResponseDto;
 import com.denizcanbank.accounts.exception.GlobalExceptionHandler;
 import com.denizcanbank.accounts.handler.Handler;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
+import io.github.resilience4j.timelimiter.TimeLimiter;
+import io.github.resilience4j.timelimiter.TimeLimiterConfig;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.info.Info;
@@ -14,17 +18,22 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springdoc.core.annotations.RouterOperations;
+import org.springframework.cloud.circuitbreaker.resilience4j.ReactiveResilience4JCircuitBreakerFactory;
+import org.springframework.cloud.circuitbreaker.resilience4j.Resilience4JConfigBuilder;
+import org.springframework.cloud.client.circuitbreaker.Customizer;
+import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreakerFactory;
 import org.springframework.cloud.client.loadbalancer.reactive.ReactorLoadBalancerExchangeFilterFunction;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.server.*;
+
+import java.time.Duration;
+
 
 @OpenAPIDefinition(
         info = @Info(
@@ -105,4 +114,28 @@ public class AppConfig {
         return new AccountComparisonService();
     }
 
+    @Bean
+    public Customizer<ReactiveResilience4JCircuitBreakerFactory> circuitBreakerFactoryCustomizer() {
+        return fac -> fac.configureDefault(
+                id -> new Resilience4JConfigBuilder(id)
+                        .circuitBreakerConfig(
+                                CircuitBreakerConfig.custom()
+                                        .minimumNumberOfCalls(2)
+                                        .slidingWindowSize(2)
+                                        .waitDurationInOpenState(Duration.ofSeconds(5))
+                                        .build()
+                        )
+                        .timeLimiterConfig(
+                                TimeLimiterConfig.custom()
+                                        .timeoutDuration(Duration.ofSeconds(10))
+                                        .build()
+                        )
+                        .build()
+        );
+    }
+
+    @Bean
+    public ReactiveCircuitBreaker cardCircuitBreaker(ReactiveResilience4JCircuitBreakerFactory factory) {
+        return factory.create("cardCircuitBreaker");
+    }
 }

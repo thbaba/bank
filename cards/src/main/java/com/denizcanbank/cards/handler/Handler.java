@@ -17,6 +17,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -67,6 +68,7 @@ public class Handler {
 
     public Mono<ServerResponse> readByAccountIDHandler(ServerRequest request) {
         return Mono.just(request.pathVariable("accountID"))
+                .delayElement(Duration.ofSeconds(5))
                 .flatMapMany(accountIDService::readByAccountID)
                 .map(cardIDMapper::toDto)
                 .map(dto -> ServerSentEvent.builder(dto).event("ReadAccountsCards").id(dto.cardID()).build())
