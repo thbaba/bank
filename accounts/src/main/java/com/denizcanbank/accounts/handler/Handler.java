@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 
 import javax.print.attribute.standard.Media;
 import java.net.URI;
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -69,7 +70,8 @@ public class Handler {
                     ServerSentEvent accountSentEvent = ServerSentEvent.builder(dto).event("AccountDetails").id(String.valueOf(counter.getAndIncrement())).build();
                     Flux<ServerSentEvent> cards = cardService.readCardsByAccountID(dto.accountID()).map(cardClientMapper::toDto).map(clientDto -> ServerSentEvent.builder(clientDto).event("AccountDetails").id(String.valueOf(counter.getAndIncrement())).build());
                     return cards.startWith(accountSentEvent);
-                }).as(flux -> ServerResponse.ok().contentType(MediaType.TEXT_EVENT_STREAM).body(flux, ServerSentEvent.class));
+                }).as(flux -> ServerResponse.ok().contentType(MediaType.TEXT_EVENT_STREAM).body(flux, ServerSentEvent.class))
+                .delayElement(Duration.ofMillis(95));
     }
 
     public Mono<ServerResponse> fetchBySecurityNumberHandler(ServerRequest request) {

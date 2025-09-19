@@ -7,9 +7,7 @@ import com.denizcanbank.accounts.dto.AccountRegistrationRequestDto;
 import com.denizcanbank.accounts.dto.AccountResponseDto;
 import com.denizcanbank.accounts.exception.GlobalExceptionHandler;
 import com.denizcanbank.accounts.handler.Handler;
-import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
-import io.github.resilience4j.timelimiter.TimeLimiter;
 import io.github.resilience4j.timelimiter.TimeLimiterConfig;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,7 +22,6 @@ import org.springframework.cloud.circuitbreaker.resilience4j.ReactiveResilience4
 import org.springframework.cloud.circuitbreaker.resilience4j.Resilience4JConfigBuilder;
 import org.springframework.cloud.client.circuitbreaker.Customizer;
 import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreaker;
-import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreakerFactory;
 import org.springframework.cloud.client.loadbalancer.reactive.ReactorLoadBalancerExchangeFilterFunction;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -135,7 +132,7 @@ public class AppConfig {
     }
 
     @Bean
-    public ReactiveCircuitBreaker cardCircuitBreaker(ReactiveResilience4JCircuitBreakerFactory factory) {
-        return factory.create("cardCircuitBreaker");
+    public ReactiveCircuitBreaker cardsCircuitBreaker(ReactiveResilience4JCircuitBreakerFactory factory) {
+        return factory.create("cardsCircuitBreaker");
     }
 }

@@ -19,7 +19,7 @@ public class CardClient implements ICardClient {
 
     private final CardClientMapper cardMapper;
 
-    private final ReactiveCircuitBreaker cardCircuitBreaker;
+    private final ReactiveCircuitBreaker cardsCircuitBreaker;
 
     @Override
     public Flux<Card> accountsCards(ID accountID) {
@@ -30,7 +30,7 @@ public class CardClient implements ICardClient {
                 .retrieve()
                 .bodyToFlux(CardClientDto.class)
                 .map(cardMapper::toEntity)
-                .transformDeferred(f -> cardCircuitBreaker.run(f, throwable -> {
+                .transformDeferred(f -> cardsCircuitBreaker.run(f, throwable -> {
                     System.out.println("Error: " + throwable.getMessage());
                     return Flux.empty();
                 }));
