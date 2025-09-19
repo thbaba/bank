@@ -10,6 +10,9 @@ import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreaker;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
+import reactor.util.retry.Retry;
+
+import java.time.Duration;
 
 @Repository
 @RequiredArgsConstructor
@@ -33,6 +36,7 @@ public class CardClient implements ICardClient {
                 .transformDeferred(f -> cardsCircuitBreaker.run(f, throwable -> {
                     System.out.println("Error: " + throwable.getMessage());
                     return Flux.empty();
-                }));
+                }).retryWhen(Retry.backoff(3, Duration.ofSeconds(2)))
+                );
     }
 }

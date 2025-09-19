@@ -95,11 +95,11 @@ public class RoutingConfig {
                                         .waitDurationInOpenState(Duration.ofSeconds(5))
                                         .build()
                         )
-                        .timeLimiterConfig(
-                                TimeLimiterConfig.custom()
-                                        .timeoutDuration(Duration.ofSeconds(2))
-                                        .build()
-                        )
+//                        .timeLimiterConfig(
+//                                TimeLimiterConfig.custom()
+//                                        .timeoutDuration(Duration.ofSeconds(2))
+//                                        .build()
+//                        )
                         .build()
         );
     }
