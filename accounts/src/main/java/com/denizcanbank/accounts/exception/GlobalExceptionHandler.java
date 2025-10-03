@@ -61,4 +61,10 @@ public class GlobalExceptionHandler {
         );
     }
 
+    public Mono<ServerResponse> improperPayloadExceptionHandler(ImproperPayloadException ex) {
+        return ServerResponse.status(HttpStatus.BAD_REQUEST).bodyValue(
+                new ServerErrorResponseDto("Invalid Payload", ex.getMessage() + " | Payload: " + ex.getPayload().toString(), LocalDateTime.now())
+        );
+    }
+
 }

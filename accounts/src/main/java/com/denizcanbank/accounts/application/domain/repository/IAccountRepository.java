@@ -15,4 +15,5 @@ public interface IAccountRepository {
     Mono<Void> deleteAccount(AccountNumber accountNumber);
     Mono<Void> deleteAccounts(SecurityNumber securityNumber);
 
+    Mono<Boolean> isAccountExists(Account account);
 }

@@ -90,4 +90,14 @@ public class AccountRepository implements IAccountRepository {
                 .bind("securityNumber", securityNumber.toString())
                 .then();
     }
+
+    @Override
+    public Mono<Boolean> isAccountExists(Account account) {
+        String sqlQuery = "SELECT EXISTS(SELECT 1 FROM accounts WHERE security_number = :securityNumber AND account_type = :accountType)";
+        return client.sql(sqlQuery)
+                .bind("securityNumber", account.securityNumber().toString())
+                .bind("accountType", account.accountType().name())
+                .map((row, _) -> row.get(0, Boolean.class))
+                .one();
+    }
 }

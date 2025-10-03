@@ -1,7 +1,6 @@
 package com.denizcanbank.accounts.config;
 
 import com.denizcanbank.accounts.application.domain.exception.*;
-import com.denizcanbank.accounts.application.domain.service.AccountComparisonService;
 import com.denizcanbank.accounts.application.domain.service.AccountConsistencyService;
 import com.denizcanbank.accounts.dto.AccountRegistrationRequestDto;
 import com.denizcanbank.accounts.dto.AccountResponseDto;
@@ -90,6 +89,7 @@ public class AppConfig {
                                 .onErrorResume(InvalidIDException.class, exceptionHandler::invalidIDException)
                                 .onErrorResume(InvalidSecurityNumberException.class, exceptionHandler::invalidSecurityNumberException)
                                 .onErrorResume(NoSuchAccountException.class, exceptionHandler::noSuchAccountExceptionHandler)
+                                .onErrorResume(ImproperPayloadException.class, exceptionHandler::improperPayloadExceptionHandler)
                                 .onErrorResume(Exception.class, exceptionHandler::globalExceptionHandler)
                         )
                         .build()
@@ -104,11 +104,6 @@ public class AppConfig {
     @Bean
     public AccountConsistencyService accountConsistencyService() {
         return new AccountConsistencyService();
-    }
-
-    @Bean
-    public AccountComparisonService accountComparisonService() {
-        return new AccountComparisonService();
     }
 
     @Bean
