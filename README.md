@@ -6,3 +6,5 @@ Exploratoin repo for webflux and microservices.
 - Spring Config Server with Github configuration source
 - Client side discovery with Eureka
 - Transactional Outbox Pattern with Kafka
+- Spring Cloud Gateway
+- Circuit Limiter, Retry and RateLimiter with Resilience4J
