@@ -32,9 +32,9 @@ public class EventReader {
                 }else {
                     return Mono.empty();
                 }
-            }).onErrorMap(ex -> new NewAccountEventProcessingException("Account#" + newAccount.id() + " | " + ex.getMessage()));
+            }).onErrorMap(ex -> new NewAccountEventProcessingException("Account#" + newAccount.id() + " | " + ex.getMessage(), record));
         } catch (JsonProcessingException e) {
-            throw new NewAccountEventProcessingException(e.getMessage());
+            throw new NewAccountEventProcessingException(e.getMessage(), record);
         }
     }
 
