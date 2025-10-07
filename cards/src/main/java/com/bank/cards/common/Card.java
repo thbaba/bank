@@ -1,5 +1,6 @@
-package com.bank.cards.registercard;
+package com.bank.cards.common;
 
+import com.bank.cards.registercard.InsufficientFundsException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

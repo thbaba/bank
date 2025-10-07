@@ -8,6 +8,11 @@ import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 @EnableR2dbcRepositories
 public class CardsApplication {
 
+    /*
+    * TODO: Needs a refactor for repetitive works and
+    * TODO: to clean package structure I need to consider separation of concerns.
+    * */
+
     public static void main(String[] args) {
         SpringApplication.run(CardsApplication.class, args);
     }

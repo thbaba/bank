@@ -52,7 +52,7 @@ public class KafkaConfig {
     }
 
     @Bean
-    public Producer<Integer, String> kafkaProducer() {
+    public Producer<Integer, String> dlqProducer() {
         Map<String, Object> config = new HashMap<>();
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9001,localhost:9002,localhost:9003");
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, IntegerSerializer.class);
@@ -87,11 +87,27 @@ public class KafkaConfig {
     }
 
     @Bean
-    public ApplicationRunner createTopicApplicationRunner(EventReader eventReader, EventWriter eventWriter) {
+    public ApplicationRunner createTopicApplicationRunner(EventReader eventReader, DLQEventWriter eventWriter) {
         return new ApplicationRunner() {
             @Override
             public void run(ApplicationArguments args) throws Exception {
-                Mono.just(dlqTopic())
+                createTopic(dlqTopic());
+
+                AtomicBoolean semaphore = new AtomicBoolean(false);
+
+                Flux.interval(Duration.ofSeconds(1))
+                        .flatMap(i -> semaphore.compareAndSet(false, true) ?
+                                    eventReader.read().doFinally(_ -> semaphore.set(false)) : Flux.empty())
+                        .onErrorContinue(NewAccountEventProcessingException.class, (ex, o) -> {
+                            System.out.println("Account Processing Failed: " + ex.getMessage());
+                            eventWriter.write(((NewAccountEventProcessingException)ex).getRecord());
+                        })
+                        .onErrorContinue(Exception.class, (ex, o) -> System.out.println("Account Processing Failed: " + ex.getMessage()))
+                        .subscribe();
+            }
+
+            private void createTopic(NewTopic topic) {
+                Mono.just(topic)
                         .flatMap(newTopic -> {
                             try(AdminClient client = adminClientFactory().get()) {
                                 client.createTopics(List.of(newTopic)).all().get();
@@ -104,18 +120,6 @@ public class KafkaConfig {
                             System.out.println(ex.getMessage());
                             return Mono.empty();
                         })
-                        .subscribe();
-
-                AtomicBoolean semaphore = new AtomicBoolean(false);
-
-                Flux.interval(Duration.ofSeconds(1))
-                        .flatMap(i -> semaphore.compareAndSet(false, true) ?
-                                    eventReader.read().doFinally(_ -> semaphore.set(false)) : Flux.empty())
-                        .onErrorContinue(NewAccountEventProcessingException.class, (ex, o) -> {
-                            System.out.println("Account Processing Failed: " + ex.getMessage());
-                            eventWriter.write(((NewAccountEventProcessingException)ex).getRecord());
-                        })
-                        .onErrorContinue(Exception.class, (ex, o) -> System.out.println("Account Processing Failed: " + ex.getMessage()))
                         .subscribe();
             }
         };

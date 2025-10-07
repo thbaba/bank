@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class EventWriter implements ApplicationContextAware {
+public class DLQEventWriter implements ApplicationContextAware {
 
-    private final ReactiveKafkaProducer reactiveKafkaProducer;
+    private final ReactiveKafkaDLQProducer reactiveKafkaProducer;
 
     private ApplicationContext applicationContext;
 

@@ -1,4 +1,4 @@
-package com.bank.cards.cardevent;
+package com.bank.cardseventpublisher;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,12 +10,13 @@ import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table("events")
-public class CardEvent {
+public class Event {
+
     @Id
     @Column("id")
     private Integer id;
@@ -25,4 +26,5 @@ public class CardEvent {
     private String payload;
     private String status;
     private LocalDateTime created_at;
+
 }

@@ -13,14 +13,14 @@ import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
-public class ReactiveKafkaProducer {
+public class ReactiveKafkaDLQProducer {
 
-    private final Producer<Integer, String> kafkaProducer;
+    private final Producer<Integer, String> dlqProducer;
 
     public Mono<Integer> publish(ConsumerRecord<Integer, String> consumerRecord) {
         return Mono.create(sink -> {
             var record = toRecord(consumerRecord);
-            kafkaProducer.send(record, (metadata, ex) -> {
+            dlqProducer.send(record, (metadata, ex) -> {
                 if(Objects.nonNull(ex)) {
                     sink.error(new KafkaSendException(String.format("Error on DLQ Record Key: %s", record.key()), ex));
                 } else {
@@ -43,7 +43,7 @@ public class ReactiveKafkaProducer {
 
     @PreDestroy
     public void close() {
-        kafkaProducer.close();
+        dlqProducer.close();
     }
 
 }

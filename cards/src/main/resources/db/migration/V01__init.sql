@@ -13,8 +13,10 @@ create table cards(
 
 create table events (
     id serial primary key,
+    name varchar(32) not null,
     topic varchar(128) not null,
     key int not null,
     payload text not null,
-    status varchar(8) not null default 'PENDING'
+    status varchar(8) not null default 'PENDING',
+    created_at timestamp without time zone not null default now()
 );
