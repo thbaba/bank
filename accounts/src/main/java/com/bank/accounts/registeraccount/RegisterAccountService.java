@@ -33,7 +33,7 @@ public class RegisterAccountService implements IRegisterAccountUseCase{
             return Mono.error(new AccountAlreadyRegisteredException("Account already exists!"));
         } else {
             return registerAccountRepository.registerAccount(securityNumber)
-                    .map(id -> new Account(id, securityNumber, 0.0f));
+                    .map(id -> new Account(id, securityNumber));
         }
     }
 

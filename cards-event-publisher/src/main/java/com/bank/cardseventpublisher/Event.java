@@ -16,9 +16,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Table("events")
 public class Event {
-
-    @Id
-    @Column("id")
     private Integer id;
     private String name;
     private String topic;
@@ -26,5 +23,4 @@ public class Event {
     private String payload;
     private String status;
     private LocalDateTime created_at;
-
 }

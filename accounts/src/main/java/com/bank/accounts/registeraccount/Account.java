@@ -12,5 +12,4 @@ import lombok.Setter;
 public class Account {
     private Integer id;
     private String securityNumber;
-    private Float balance;
 }

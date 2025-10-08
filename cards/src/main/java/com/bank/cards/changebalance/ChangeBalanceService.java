@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class ChangeBalanceService {
 
-    private final IChangeBalanceCardRepository depositCardRepository;
+    private final IChangeBalanceCardRepository changeBalanceCardRepository;
 
     private final ICardEventRepository cardEventRepository;
 
@@ -25,9 +25,9 @@ public class ChangeBalanceService {
         Integer id = dto.cardId();
         Float amount = dto.amount();
 
-        return depositCardRepository.findById(id)
+        return changeBalanceCardRepository.findById(id)
                 .doOnNext(card -> card.deposit(amount))
-                .flatMap(card -> depositCardRepository.updateBalance(card.getId(), card.getBalance()).thenReturn(card))
+                .flatMap(card -> changeBalanceCardRepository.updateBalance(card.getId(), card.getBalance()).thenReturn(card))
                 .flatMap(card -> {
                     ChangeBalancePayload payload = new ChangeBalancePayload(card.getAccountId(), amount);
                     return cardEventRepository.register("DEPOSIT", "card-balance-event", card.getAccountId(), payload.toJson(objectMapper)).thenReturn(card);
@@ -43,9 +43,9 @@ public class ChangeBalanceService {
         Integer id = dto.cardId();
         Float amount = dto.amount();
 
-        return depositCardRepository.findById(id)
+        return changeBalanceCardRepository.findById(id)
                 .doOnNext(card -> card.withdraw(amount))
-                .flatMap(card -> depositCardRepository.updateBalance(card.getId(), card.getBalance()).thenReturn(card))
+                .flatMap(card -> changeBalanceCardRepository.updateBalance(card.getId(), card.getBalance()).thenReturn(card))
                 .flatMap(card -> {
                     ChangeBalancePayload payload = new ChangeBalancePayload(card.getAccountId(), amount);
                     return cardEventRepository.register("WITHDRAW", "card-balance-event", card.getAccountId(), payload.toJson(objectMapper)).thenReturn(card);
