@@ -40,7 +40,7 @@ public class KafkaConfig {
         return TopicBuilder.name("card-event")
                 .replicas(3)
                 .partitions(10)
-                .config(TopicConfig.CLEANUP_POLICY_CONFIG, TopicConfig.CLEANUP_POLICY_DELETE)
+                .config(TopicConfig.CLEANUP_POLICY_CONFIG, TopicConfig.COMPRESSION_LZ4_LEVEL_CONFIG)
                 .config(TopicConfig.RETENTION_BYTES_CONFIG, "3221225472")
                 .config(TopicConfig.RETENTION_MS_CONFIG, "-1")
                 .build();
