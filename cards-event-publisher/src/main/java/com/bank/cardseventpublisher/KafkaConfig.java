@@ -14,10 +14,8 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -40,7 +38,8 @@ public class KafkaConfig {
         return TopicBuilder.name("card-event")
                 .replicas(3)
                 .partitions(10)
-                .config(TopicConfig.CLEANUP_POLICY_CONFIG, TopicConfig.COMPRESSION_LZ4_LEVEL_CONFIG)
+                .config(TopicConfig.CLEANUP_POLICY_CONFIG, TopicConfig.CLEANUP_POLICY_COMPACT)
+                .config(TopicConfig.COMPRESSION_TYPE_CONFIG, "lz4")
                 .config(TopicConfig.RETENTION_BYTES_CONFIG, "3221225472")
                 .config(TopicConfig.RETENTION_MS_CONFIG, "-1")
                 .build();

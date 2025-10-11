@@ -25,6 +25,15 @@ services:
     ports:
       - "5002:5432"
 
+  materialized-view-mongo:
+    image: mongo
+    container_name: mv-mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+      - "27017:27017"
+
   kafka1:
     <<: *kafka-net-base
     image: "apache/kafka:4.0.0"
